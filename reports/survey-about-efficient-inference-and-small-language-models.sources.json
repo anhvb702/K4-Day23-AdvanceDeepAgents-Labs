@@ -1,0 +1,122 @@
+[
+  {
+    "n": 1,
+    "id": "2205.14135",
+    "url": "https://arxiv.org/abs/2205.14135",
+    "title": "FLASHATTENTION: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+    "date": "2022-06-23",
+    "source": "arxiv"
+  },
+  {
+    "n": 2,
+    "id": "vllm-paged-attention-doc",
+    "url": "https://docs.vllm.ai/en/latest/design/paged_attention/",
+    "title": "Paged Attention - vLLM Documentation",
+    "date": "n.d.",
+    "source": "web"
+  },
+  {
+    "n": 3,
+    "id": "2309.06180",
+    "url": "https://arxiv.org/abs/2309.06180",
+    "title": "Efficient Memory Management for Large Language Model Inference (PagedAttention and vLLM)",
+    "date": "n.d.",
+    "source": "arxiv"
+  },
+  {
+    "n": 4,
+    "id": "2306.00978",
+    "url": "https://huggingface.co/papers/2306.00978",
+    "title": "AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration",
+    "date": "2023-06-01",
+    "source": "hf-search"
+  },
+  {
+    "n": 5,
+    "id": "2507.18553",
+    "url": "https://huggingface.co/papers/2507.18553",
+    "title": "The Geometry of LLM Quantization: GPTQ as Babai's Nearest Plane Algorithm",
+    "date": "2025-07-24",
+    "source": "hf-search"
+  },
+  {
+    "n": 6,
+    "id": "aws-llm-quant-2026-01-09",
+    "url": "https://aws.amazon.com/blogs/machine-learning/accelerating-llm-inference-with-post-training-weight-and-activation-using-awq-and-gptq-on-amazon-sagemaker-ai/",
+    "title": "Accelerating LLM inference with post-training weight and activation quantization using AWQ and GPTQ on Amazon SageMaker AI",
+    "date": "2026-01-09",
+    "source": "web"
+  },
+  {
+    "n": 7,
+    "id": "medium-msft-2026-02-24",
+    "url": "https://medium.com/data-science-at-microsoft/a-practical-guide-to-int4-quantization-for-slms-gptq-vs-awq-olive-and-real-world-results-2f63d6963d1d",
+    "title": "A practical guide to INT4 quantization for small language models: GPTQ vs AWQ, Olive, and real-world results",
+    "date": "2026-02-24",
+    "source": "web"
+  },
+  {
+    "n": 8,
+    "id": "2402.14160",
+    "url": "https://huggingface.co/papers/2402.14160",
+    "title": "Recursive Speculative Decoding: Accelerating LLM Inference via Sampling Without Replacement",
+    "date": "2024-02-21",
+    "source": "hf-search"
+  },
+  {
+    "n": 9,
+    "id": "2310.15141",
+    "url": "https://huggingface.co/papers/2310.15141",
+    "title": "SpecTr: Fast Speculative Decoding via Optimal Transport",
+    "date": "2023-10-23",
+    "source": "hf-search"
+  },
+  {
+    "n": 10,
+    "id": "https://research.google/blog/looking-back-at-speculative-decoding",
+    "url": "https://research.google/blog/looking-back-at-speculative-decoding",
+    "title": "Looking back at speculative decoding - Google Research",
+    "date": "2024-12-06",
+    "source": "web"
+  },
+  {
+    "n": 11,
+    "id": "https://pytorch.org/blog/hitchhikers-guide-speculative-decoding/",
+    "url": "https://pytorch.org/blog/hitchhikers-guide-speculative-decoding/",
+    "title": "A Hitchhiker’s Guide to Speculative Decoding - PyTorch",
+    "date": "2024-11-13",
+    "source": "web"
+  },
+  {
+    "n": 12,
+    "id": "2609.34992",
+    "url": "https://huggingface.co/papers/2609.34992",
+    "title": "Composable Decoding on the Probability Simplex: Theory and Implementation",
+    "date": "2026-09-28",
+    "source": "hf-search"
+  },
+  {
+    "n": 13,
+    "id": "2504.17376",
+    "url": "https://huggingface.co/papers/2504.17376",
+    "title": "On-Device Qwen2.5: Efficient LLM Inference with Model Compression and Hardware Acceleration",
+    "date": "2025-04-24",
+    "source": "hf-search"
+  },
+  {
+    "n": 14,
+    "id": "2606.03102",
+    "url": "https://huggingface.co/papers/2606.03102",
+    "title": "Small RL Controller, Large Language Model: RL-Guided Adaptive Sampling for Test-Time Scaling",
+    "date": "2026-06-02",
+    "source": "hf-search"
+  },
+  {
+    "n": 15,
+    "id": "2409.11055",
+    "url": "https://arxiv.org/abs/2409.11055",
+    "title": "A Comprehensive Evaluation of Quantized Instruction-Tuned Large Language Models",
+    "date": "2024-09-10",
+    "source": "arxiv"
+  }
+]

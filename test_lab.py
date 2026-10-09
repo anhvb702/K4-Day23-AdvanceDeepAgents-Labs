@@ -98,12 +98,53 @@ class ToolTests(unittest.TestCase):
         with patch('tools.httpx.request', side_effect=httpx.ConnectError('offline')), self.assertRaises(RetryableError):
             _request('GET', 'https://example.org')
 
+    def test_arxiv_atom_normalization_and_spacing(self):
+        import json
+        import httpx
+        from unittest.mock import patch
+        from tools import arxiv_search
+        xml = '''<feed xmlns="http://www.w3.org/2005/Atom"><entry>
+          <id>http://arxiv.org/abs/2501.00001v3</id><published>2025-01-02T00:00:00Z</published>
+          <title> A  paper\n title </title><summary> Evidence  summary </summary></entry></feed>'''
+        with patch('tools._request', return_value=httpx.Response(200, text=xml)) as request, \
+             patch('tools._last_arxiv', 100), patch('tools.time.monotonic', return_value=101), \
+             patch('tools.time.sleep') as sleep:
+            result = json.loads(arxiv_search.invoke({'query': 'all:world OR "model"', 'max_results': 100}))
+            self.assertEqual(result[0]['id'], '2501.00001')
+            self.assertEqual(result[0]['url'], 'https://arxiv.org/abs/2501.00001')
+            self.assertEqual(result[0]['title'], 'A paper title')
+            self.assertEqual(request.call_args.kwargs['params']['search_query'], 'all:world AND all:model')
+            self.assertEqual(request.call_args.kwargs['params']['max_results'], 30)
+            sleep.assert_called_once_with(2)
+
+    def test_hf_daily_sort_filter_and_no_results(self):
+        import json
+        import httpx
+        from unittest.mock import patch
+        from tools import hf_daily_papers
+        data = [{'paper': {'id': '1', 'title': 'World model A', 'upvotes': 2}},
+                {'paper': {'id': '2', 'title': 'World model B', 'upvotes': 5}},
+                {'paper': {'id': '3', 'title': 'Unrelated', 'upvotes': 10}}]
+        with patch('tools._request', return_value=httpx.Response(200, json=data)):
+            result = json.loads(hf_daily_papers.invoke({'keyword': 'world'}))
+            self.assertEqual([r['id'] for r in result], ['2', '1'])
+            self.assertEqual(hf_daily_papers.invoke({'keyword': 'missing'}), 'NO RESULTS')
+            self.assertTrue(hf_daily_papers.invoke({'date': 'invalid'}).startswith('ERROR:'))
+
     def test_hf_normalization(self):
         from tools import _hf_records
         result = _hf_records([{'paper': {'id': '2501.00001', 'title': ' A  paper ', 'ai_summary': 'short', 'summary': 'long', 'upvotes': 3}}, {'paper': {}}], True)
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0]['summary'], 'short')
         self.assertEqual(result[0]['url'], 'https://huggingface.co/papers/2501.00001')
+
+    def test_short_normalized_and_url_encoded_secrets_are_redacted(self):
+        from unittest.mock import patch
+        from tools import redact
+        with patch.dict('os.environ', {'EXA_API_KEY': ' ab/+ '}):
+            result = redact('key=ab/+&encoded=ab%2F%2B')
+            self.assertNotIn('ab/+', result)
+            self.assertNotIn('ab%2F%2B', result)
 
     def test_tools_errors_redact_keys(self):
         from unittest.mock import patch
@@ -115,7 +156,57 @@ class ToolTests(unittest.TestCase):
         self.assertEqual(arxiv_search.invoke({'query': '\" : AND OR'}), 'NO RESULTS')
 
 
+class PreparationTests(unittest.TestCase):
+    def test_required_heading_case_is_canonicalized(self):
+        from prepare_report import prepare
+        text = '# Survey\n## Trends and Open Problems\nSupported prose [1].\n'
+        self.assertIn('## Trends and open problems', prepare(text, []))
+
+    def test_premature_references_and_identifier_citations_are_normalized(self):
+        from prepare_report import prepare
+        from finalize_citations import finalize
+        sources = [{'n': 1, 'id': '1803.10122', 'url': 'https://arxiv.org/abs/1803.10122', 'title': 'World Models', 'source': 'web'}]
+        text = '# Survey\n## References\n[1] stale\n## TL;DR\nClaim [1803.10122]. `Example [1803.10122]`\n## Background\nClaim [1].\n'
+        body = prepare(text, sources)
+        self.assertNotIn('## References', body)
+        self.assertIn('Claim [1].', body)
+        self.assertIn('`Example [1803.10122]`', body)
+        report, manifest, problems = finalize(body, sources)
+        self.assertEqual(problems, [])
+        self.assertEqual(check(report, manifest), [])
+
+
+class AgentTests(unittest.TestCase):
+    def test_optional_research_model_does_not_weaken_checker(self):
+        from unittest.mock import patch
+        from agents import build_subagents
+        with patch.dict('os.environ', {'LAB_RESEARCH_MODEL': 'openai:gpt-4.1-mini'}):
+            agents = build_subagents()
+        self.assertEqual(agents[0]['model'], 'openai:gpt-4.1-mini')
+        self.assertNotIn('model', agents[1])
+
+    def test_only_bounded_named_subagents_and_no_implicit_general_purpose(self):
+        from unittest.mock import patch
+        from langchain_openai import ChatOpenAI
+        from agents import build_lead_agent, build_subagents
+        agents = build_subagents()
+        self.assertEqual({a['name'] for a in agents}, {'researcher', 'citation-checker'})
+        for agent in agents:
+            self.assertEqual(len(agent['middleware']), 2)
+        with patch('agents.create_deep_agent') as create, patch('agents.register_harness_profile') as register:
+            build_lead_agent(None, ChatOpenAI(model='gpt-4o-mini', api_key='test'))
+            self.assertFalse(register.call_args.args[1].general_purpose_subagent.enabled)
+            self.assertEqual(len(create.call_args.kwargs['middleware']), 3)
+
+
 class ResearchTests(unittest.TestCase):
+    def test_report_quality_rejects_short_generic_survey(self):
+        from research import check_report_quality
+        self.assertTrue(check_report_quality('# Survey\n## TL;DR\nShort claim.\n## References', []))
+        sources = [{'date': '2018-01-01'}, {'date': '2026-01-01'}]
+        report = '# Survey\n## TL;DR\n## Background\n## Theme A\n## Theme B\n## Theme C\n## Trends and open problems\n' + 'evidence ' * 1250 + '\n## References\n'
+        self.assertEqual(check_report_quality(report, sources), [])
+
     def test_slug_and_usage_summary(self):
         from research import slugify, summarize
         from langchain_core.messages import AIMessage
@@ -138,14 +229,21 @@ class ResearchTests(unittest.TestCase):
         sources = [dict(n=1, id='2501.00001', url='https://arxiv.org/abs/2501.00001', source='arxiv'),
                    dict(n=2, id='2501.00002', url='https://huggingface.co/papers/2501.00002', source='hf-search'),
                    dict(n=3, id='web', url='https://example.org/a', source='web')]
-        report = ('Claim [1][2][3].\n\n## References\n' + '\n'.join(f"[{s['n']}] Title. {s['url']} (n.d.)" for s in sources) + '\n').encode()
+        sources[0]['date'], sources[1]['date'] = '2018-01-01', '2026-01-01'
+        report = ('# Survey\n## TL;DR\n## Background\n## Theme A\n## Theme B\n## Theme C\n## Trends and open problems\n' + 'evidence ' * 1250 + ' Claim [1][2][3].\n\n## References\n' + '\n'.join(f"[{s['n']}] Title. {s['url']} (n.d.)" for s in sources) + '\n').encode()
         manifest = json.dumps(sources, indent=3).encode()
-        message = AIMessage(content='', tool_calls=[{'name': 'task', 'args': {'subagent_type': 'researcher'}, 'id': str(i)} for i in range(3)])
+        message = AIMessage(content='', tool_calls=[{'name': 'task', 'args': {'subagent_type': 'researcher'}, 'id': str(i)} for i in range(3)] + [{'name': 'task', 'args': {'subagent_type': 'citation-checker'}, 'id': 'check'}])
         with TemporaryDirectory() as directory, patch('research.download', return_value={REPORT_PATH: report, SOURCES_PATH: manifest}):
             path = save_outputs(None, 'test', [message], 1, 'test', Path(directory))
             self.assertEqual(path.read_bytes(), report)
             self.assertEqual(path.with_suffix('.sources.json').read_bytes(), manifest)
             self.assertEqual(json.loads(path.with_suffix('.meta.json').read_text())['n_sources'], 3)
+            broken = [dict(sources[0], id='wrong-1'), dict(sources[1], id='wrong-2'), sources[2]]
+            with patch('research.download', return_value={REPORT_PATH: report, SOURCES_PATH: json.dumps(broken).encode()}):
+                with self.assertRaises(RuntimeError) as caught:
+                    save_outputs(None, 'test', [message], 1, 'test', Path(directory))
+                self.assertIn('source [1]', str(caught.exception))
+                self.assertIn('source [2]', str(caught.exception))
             original = {p.name: p.read_bytes() for p in Path(directory).iterdir()}
             replace = Path.replace
             calls = []
@@ -169,8 +267,24 @@ class ResearchTests(unittest.TestCase):
              patch('research._execute_ok', return_value='OK'), \
              patch('research.save_outputs', side_effect=[RuntimeError('source URL does not match'), 'reports/test.md']):
             self.assertEqual(main('test'), 0)
-            self.assertEqual(agent.invoke.call_count, 2)
+            self.assertEqual(agent.invoke.call_count, 4)
+            for i in range(3):
+                self.assertIn(f'PHASE {i + 1}', str(agent.invoke.call_args_list[i].args[0]))
             self.assertIn('source URL does not match', str(agent.invoke.call_args.args[0]))
+
+    def test_main_stops_after_two_repairs_and_empty_topic_is_usage_error(self):
+        from contextlib import nullcontext
+        from unittest.mock import patch, Mock
+        from research import main
+        agent = Mock()
+        agent.invoke.return_value = {'messages': []}
+        with patch('research.make_model'), patch('research.open_sandbox', return_value=nullcontext(Mock())), \
+             patch('research.build_lead_agent', return_value=agent), patch('research.upload'), \
+             patch('research._execute_ok', return_value='OK'), \
+             patch('research.save_outputs', side_effect=RuntimeError('bad artifacts')):
+            self.assertEqual(main('test'), 1)
+            self.assertEqual(agent.invoke.call_count, 5)
+        self.assertEqual(main(''), 2)
 
     def test_failed_download_writes_nothing(self):
         from unittest.mock import patch

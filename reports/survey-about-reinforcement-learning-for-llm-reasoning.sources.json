@@ -1,0 +1,138 @@
+[
+  {
+    "n": 1,
+    "id": "639a9a172c044fbb64175b5fad42e9a5",
+    "url": "https://proceedings.neurips.cc/paper_files/paper/2022/file/639a9a172c044fbb64175b5fad42e9a5-Paper-Conference.pdf",
+    "title": "STaR: Self-Taught Reasoner",
+    "date": "2022",
+    "source": "web"
+  },
+  {
+    "n": 2,
+    "id": "2410.23912",
+    "url": "https://arxiv.org/abs/2410.23912",
+    "title": "RL-STaR: Theoretical Analysis of Reinforcement Learning Frameworks for Self-Taught Reasoner",
+    "date": "2025-04-10",
+    "source": "arxiv"
+  },
+  {
+    "n": 3,
+    "id": "n.d.",
+    "url": "https://magazine.sebastianraschka.com/p/the-state-of-llm-reasoning-model-training",
+    "title": "The State of Reinforcement Learning for LLM Reasoning",
+    "date": "2025-04-19",
+    "source": "web"
+  },
+  {
+    "n": 4,
+    "id": "2504.20571",
+    "url": "https://arxiv.org/abs/2504.20571",
+    "title": "Reinforcement Learning for Reasoning in Large Language Models",
+    "date": "2025-04",
+    "source": "arxiv"
+  },
+  {
+    "n": 5,
+    "id": "2501.12948",
+    "url": "https://huggingface.co/papers/2501.12948",
+    "title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning",
+    "date": "2025-01-22",
+    "source": "hf-search"
+  },
+  {
+    "n": 6,
+    "id": "2505.13934",
+    "url": "https://huggingface.co/papers/2505.13934",
+    "title": "RLVR-World and RLVR Related Techniques",
+    "date": "2025-05-20",
+    "source": "hf-search"
+  },
+  {
+    "n": 7,
+    "id": "2501.07301",
+    "url": "https://huggingface.co/papers/2501.07301",
+    "title": "The Lessons of Developing Process Reward Models in Mathematical Reasoning",
+    "date": "2025-01-13",
+    "source": "hf-search"
+  },
+  {
+    "n": 8,
+    "id": "https://rlvrbook.com/",
+    "url": "https://rlvrbook.com/",
+    "title": "What is RLVR? Reinforcement Learning from Verifiable Rewards",
+    "date": "n.d.",
+    "source": "web"
+  },
+  {
+    "n": 9,
+    "id": "https://www.microsoft.com/en-us/research/publication/reinforcement-learning-with-verifiable-rewards-implicitly-incentivizes-correct-reasoning-in-base-llms/",
+    "url": "https://www.microsoft.com/en-us/research/publication/reinforcement-learning-with-verifiable-rewards-implicitly-incentivizes-correct-reasoning-in-base-llms/",
+    "title": "Reinforcement Learning with Verifiable Rewards Implicitly Incentivizes Correct Reasoning in Base LLMs - Microsoft Research",
+    "date": "2026-02-17",
+    "source": "web"
+  },
+  {
+    "n": 10,
+    "id": "https://exa.ai/library/publication/gbf7ftjb3j8",
+    "url": "https://exa.ai/library/publication/gbf7ftjb3j8",
+    "title": "A Survey of Process Reward Models: From Outcome Signals to Process Supervisions for Large Language Models",
+    "date": "2025-10-09",
+    "source": "web"
+  },
+  {
+    "n": 11,
+    "id": "2601.10201",
+    "url": "https://arxiv.org/abs/2601.10201",
+    "title": "PRL: Process Reward Learning Improves LLMs' Reasoning",
+    "date": "2026-01-26",
+    "source": "arxiv"
+  },
+  {
+    "n": 12,
+    "id": "2610.11854",
+    "url": "https://arxiv.org/abs/2610.11854",
+    "title": "GRPODropout: Less is More for Online Reinforcement Learning Rollouts",
+    "date": "2026-10-08",
+    "source": "arxiv"
+  },
+  {
+    "n": 13,
+    "id": "2610.12061",
+    "url": "https://arxiv.org/abs/2610.12061",
+    "title": "When Should Agents Think? Adaptive Reasoning via Cross-Turn Estimation",
+    "date": "2026-10-08",
+    "source": "arxiv"
+  },
+  {
+    "n": 14,
+    "id": "2501.11651",
+    "url": "https://huggingface.co/papers/2501.11651",
+    "title": "Advancing Language Model Reasoning through Reinforcement Learning and Inference Scaling",
+    "date": "2025-01-20",
+    "source": "hf-search"
+  },
+  {
+    "n": 15,
+    "id": "2505.01441",
+    "url": "https://huggingface.co/papers/2505.01441",
+    "title": "Agentic Reasoning and Tool Integration for LLMs via Reinforcement Learning",
+    "date": "2025-04-28",
+    "source": "hf-search"
+  },
+  {
+    "n": 16,
+    "id": "2610.11519",
+    "url": "https://arxiv.org/abs/2610.11519",
+    "title": "Residual Advantage: Student-Relative Teacher Guidance for RL with Verifiable Rewards",
+    "date": "2026-10-08",
+    "source": "arxiv"
+  },
+  {
+    "n": 17,
+    "id": "2509.06160",
+    "url": "https://huggingface.co/papers/2509.06160",
+    "title": "Reverse-Engineered Reasoning for Open-Ended Generation",
+    "date": "2025-09-07",
+    "source": "hf-search"
+  }
+]

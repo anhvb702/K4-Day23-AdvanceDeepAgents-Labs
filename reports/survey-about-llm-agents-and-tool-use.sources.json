@@ -1,0 +1,98 @@
+[
+  {
+    "n": 1,
+    "id": "2210.03629",
+    "url": "https://arxiv.org/abs/2210.03629",
+    "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+    "date": "2023-03-10",
+    "source": "arxiv"
+  },
+  {
+    "n": 2,
+    "id": "2205.11916",
+    "url": "https://arxiv.org/abs/2205.11916",
+    "title": "Foundational Paper: Chain-of-Thought Prompting",
+    "date": "2022-05-26",
+    "source": "arxiv"
+  },
+  {
+    "n": 3,
+    "id": "https://openai.com/research/react",
+    "url": "https://openai.com/research/react",
+    "title": "Web citation: ReAct and tool-using LLM agents discussion",
+    "date": "n.d.",
+    "source": "web"
+  },
+  {
+    "n": 4,
+    "id": "https://www.microsoft.com/en-us/research/publication/architectures-for-tool-enabled-llm-agents/",
+    "url": "https://www.microsoft.com/en-us/research/publication/architectures-for-tool-enabled-llm-agents/",
+    "title": "Survey: Architectures for Tool-Enabled LLM Agents",
+    "date": "2023",
+    "source": "web"
+  },
+  {
+    "n": 5,
+    "id": "2502.05867",
+    "url": "https://huggingface.co/papers/2502.05867",
+    "title": "Self-Training Large Language Models for Tool-Use Without Demonstrations",
+    "date": "2025-02-09",
+    "source": "hf-search"
+  },
+  {
+    "n": 6,
+    "id": "2412.15495",
+    "url": "https://huggingface.co/papers/2412.15495",
+    "title": "TL-Training: A Task-Feature-Based Framework for Training Large Language Models in Tool Use",
+    "date": "2024-12-20",
+    "source": "hf-search"
+  },
+  {
+    "n": 7,
+    "id": "2602.03128",
+    "url": "https://huggingface.co/papers/2602.03128",
+    "title": "Understanding Multi-Agent LLM Frameworks: A Unified Benchmark and Experimental Analysis",
+    "date": "2026-02-03",
+    "source": "hf-search"
+  },
+  {
+    "n": 8,
+    "id": "2609.34930",
+    "url": "https://arxiv.org/abs/2609.34930",
+    "title": "PDEU-Bench: Benchmarking the Personalized Planning Lifecycle of Tool-Calling LLM Agents",
+    "date": "2026-09-28",
+    "source": "arxiv"
+  },
+  {
+    "n": 9,
+    "id": "2503.01935",
+    "url": "https://huggingface.co/papers/2503.01935",
+    "title": "MultiAgentBench: Evaluating the Collaboration and Competition of LLM agents",
+    "date": "2025-03-03",
+    "source": "hf-search"
+  },
+  {
+    "n": 10,
+    "id": "2309.10062",
+    "url": "https://huggingface.co/papers/2309.10062",
+    "title": "SMART-LLM: Smart Multi-Agent Robot Task Planning using Large Language Models",
+    "date": "2023-09-18",
+    "source": "hf-search"
+  },
+  {
+    "n": 11,
+    "id": "2606.22388",
+    "url": "https://huggingface.co/papers/2606.22388",
+    "title": "PlanBench-XL: Evaluating Long-Horizon Planning of LLM Tool-Use Agents in Large-Scale Tool Ecosystems",
+    "date": "2026-06-21",
+    "source": "hf-search"
+  },
+  {
+    "n": 12,
+    "id": "2510.09244",
+    "url": "https://arxiv.org/abs/2510.09244",
+    "title": "Fundamentals of Building Autonomous LLM Agents",
+    "date": "n.d.",
+    "source": "arxiv"
+  }
+]
