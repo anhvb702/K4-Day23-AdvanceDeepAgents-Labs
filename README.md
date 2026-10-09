@@ -4,6 +4,24 @@ Lab dựng một **hệ thống deep research đa tác tử**: người dùng ch
 
 Hình thức: **bài thực hành cá nhân**. Ngôn ngữ lập trình: Python 3.11 trở lên.
 
+## Chạy bản triển khai này (Windows PowerShell)
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+Copy-Item .env.example .env  # chỉ khi chưa có .env; điền khóa cục bộ
+.\.venv\Scripts\python.exe -m unittest test_lab -v
+.\.venv\Scripts\python.exe tools.py
+.\.venv\Scripts\python.exe research.py "survey about world model"
+.\.venv\Scripts\python.exe self_check.py
+```
+
+Không ghi đè cấu hình khóa đã có. LLM mặc định theo `LAB_MODEL` trong `.env`; phải hỗ trợ tool calling. Daytona là mặc định; Docker dùng `SANDBOX=docker`. Không có khóa nào được tải vào sandbox. Tiến độ CLI chỉ in tên công cụ, không in tham số hay khóa. Lead giới hạn 150 lần gọi model/300 tool, researcher 40/60 và citation-checker 15/20; graph lead giới hạn 1000 bước. Nếu kiểm tra đầu ra thất bại, tối đa 2 lượt sửa tiếp trong cùng sandbox (mỗi lượt vẫn chịu giới hạn model/tool); vượt giới hạn thì dừng, không lưu kết quả lỗi.
+
+Đọc kết quả trong `reports/`: `.md` là survey tiếng Anh; `.sources.json` là nguồn đánh số khớp trích dẫn; `.meta.json` chứa chủ đề, model, thời gian, số lần gọi task/tool, token của lead và họ nguồn. Token **không** bao gồm subagent, nên không phải tổng chi phí. Đầu ra chỉ được lưu khi trích dẫn hợp lệ, ít nhất 3 nhãn nguồn và 3 lần ủy quyền; báo cáo và manifest giữ nguyên bytes tải từ sandbox. Muốn thay đổi kết quả, sửa mã/prompt rồi chạy lại, không sửa báo cáo bằng tay.
+
+Test offline dùng `unittest` có sẵn, không cần `pytest`, mạng hoặc LLM. `tools.py` và `research.py` gọi dịch vụ thật, có thể tốn credit. Trước khi nộp, chạy đủ 5 chủ đề bên dưới và `self_check.py`, mở ít nhất 3 nguồn mỗi báo cáo để xác nhận nội dung; đẩy mã và kết quả lên public repo, **không** đẩy `.env`.
+
 ## 1. Mục tiêu học tập
 
 Sau lab, bạn có thể:

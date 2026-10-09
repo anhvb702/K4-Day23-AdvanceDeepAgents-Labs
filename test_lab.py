@@ -158,6 +158,20 @@ class ResearchTests(unittest.TestCase):
                 save_outputs(None, 'test', [message], 2, 'test', Path(directory))
             self.assertEqual({p.name: p.read_bytes() for p in Path(directory).iterdir()}, original)
 
+    def test_main_repairs_invalid_artifacts_inside_same_sandbox(self):
+        from contextlib import nullcontext
+        from unittest.mock import patch, Mock
+        from research import main
+        agent = Mock()
+        agent.invoke.return_value = {'messages': []}
+        with patch('research.make_model'), patch('research.open_sandbox', return_value=nullcontext(Mock())), \
+             patch('research.build_lead_agent', return_value=agent), patch('research.upload'), \
+             patch('research._execute_ok', return_value='OK'), \
+             patch('research.save_outputs', side_effect=[RuntimeError('source URL does not match'), 'reports/test.md']):
+            self.assertEqual(main('test'), 0)
+            self.assertEqual(agent.invoke.call_count, 2)
+            self.assertIn('source URL does not match', str(agent.invoke.call_args.args[0]))
+
     def test_failed_download_writes_nothing(self):
         from unittest.mock import patch
         from tempfile import TemporaryDirectory
