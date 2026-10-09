@@ -176,6 +176,32 @@ class PreparationTests(unittest.TestCase):
         self.assertEqual(check(report, manifest), [])
 
 
+class NormalizeSourcesTests(unittest.TestCase):
+    def test_noncanonical_urls_and_tool_labels_are_normalized_without_relabelling_family(self):
+        from prepare_report import normalize_sources
+        got = normalize_sources([
+            {'n': 1, 'id': '2511.02091v1', 'url': 'https://arxiv.org/html/2511.02091v1', 'source': 'arxiv'},
+            {'n': 2, 'id': '2410.00258', 'url': 'https://arxiv.org/pdf/2410.00258', 'source': 'arxiv_search'},
+            {'n': 3, 'id': 'x', 'url': 'https://huggingface.co/papers/2505.01441', 'source': 'hf-search'},
+            {'n': 4, 'id': 'N/A', 'url': 'https://arxiv.org/abs/2301.00001', 'source': 'web_search'}])
+        self.assertEqual((got[0]['id'], got[0]['url']), ('2511.02091', 'https://arxiv.org/abs/2511.02091'))
+        self.assertEqual((got[1]['source'], got[1]['url']), ('arxiv', 'https://arxiv.org/abs/2410.00258'))
+        self.assertEqual(got[2]['id'], '2505.01441')
+        self.assertEqual((got[3]['source'], got[3]['url']), ('web', 'https://arxiv.org/abs/2301.00001'))
+
+
+class AuditSourceTests(unittest.TestCase):
+    def test_slug_urls_and_wrong_titles_are_rejected_but_matching_titles_pass(self):
+        from research import audit_source_titles
+        fetch = lambda i: {'2205.14135': 'FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness'}.get(i)
+        ok = [{'n': 1, 'url': 'https://arxiv.org/abs/2205.14135', 'title': 'FlashAttention: Fast and Memory-Efficient Attention', 'source': 'arxiv'}]
+        audit_source_titles(ok, fetch)
+        with self.assertRaisesRegex(RuntimeError, 'not a real paper URL'):
+            audit_source_titles([{'n': 2, 'url': 'https://huggingface.co/papers/swe-bench', 'title': 'SWE-bench', 'source': 'hf-search'}], fetch)
+        with self.assertRaisesRegex(RuntimeError, 'wrong paper'):
+            audit_source_titles([{'n': 3, 'url': 'https://arxiv.org/abs/2205.14135', 'title': 'Chain-of-Thought Prompting', 'source': 'web'}], fetch)
+
+
 class AgentTests(unittest.TestCase):
     def test_optional_research_model_does_not_weaken_checker(self):
         from unittest.mock import patch

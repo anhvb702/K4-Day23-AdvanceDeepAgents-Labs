@@ -1,20 +1,21 @@
 {
   "topic": "survey about efficient inference and small language models",
   "model": "openai:gpt-4.1-mini",
-  "elapsed_s": 263.3,
-  "subagent_calls": 6,
+  "elapsed_s": 489.8,
+  "subagent_calls": 10,
   "tool_calls": {
-    "task": 6,
-    "read_file": 11,
-    "ls": 1,
-    "write_todos": 4,
+    "write_todos": 2,
+    "task": 10,
+    "read_file": 15,
+    "ls": 4,
     "write_file": 2,
-    "execute": 9,
-    "edit_file": 11
+    "execute": 7,
+    "edit_file": 6,
+    "grep": 1
   },
   "tokens": {
-    "input": 895586,
-    "output": 7087
+    "input": 952528,
+    "output": 7357
   },
   "n_sources": 15,
   "source_families": [
@@ -23,6 +24,6 @@
     "web"
   ],
   "research_model": "openai:gpt-4.1-mini",
-  "researcher_calls": 5,
+  "researcher_calls": 9,
   "citation_checker_calls": 1
 }

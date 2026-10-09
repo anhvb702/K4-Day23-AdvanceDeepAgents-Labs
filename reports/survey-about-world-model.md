@@ -1,116 +1,82 @@
-# Survey on World Models: Core Methods and Recent Advances
+# Deep Survey on World Models in Machine Learning
 
 ## TL;DR
-- Foundational world models combine latent space representations via variational autoencoders with recurrent neural networks (MDN-RNNs) to model stochastic environment dynamics enabling planning and reinforcement learning entirely in learned latent "dream" spaces [1][2][3][4].
-- Recent advances like DreamerV3 and MuZero employ robust recurrent state-space models and planning in latent spaces, improving exploration, scalability, and policy performance across hundreds of complex domains without environment-specific tuning [5][6].
-- The emergence of large-scale generative world models like Genie expands the concept to open-ended interactive environments trained on unlabeled video data, pushing world models towards generalist AI applications [7].
-- Action-conditioned video world models leverage action-conditioned video generation architectures to tightly integrate perception and prediction, enabling more physically plausible, multi-view, and long-horizon embodied control scenarios [8][9][10][11][12].
-- Challenges remain in hierarchical planning, balancing visual fidelity with predictive efficiency, dataset scale, and bridging simulated latent state representations with real-world control tasks.
+
+- Foundational world models by Ha and Schmidhuber (2018) establish a compact, unsupervised learning approach using recurrent neural networks with mixture density outputs to capture spatiotemporal environment representations, coupled with compact controllers trained by evolutionary strategies [1][2].
+- Recent advancements exemplified by DreamerV3 extend these models with extensive normalization and robustness techniques, scalable architectures, and outperform MuZero on diverse tasks including Atari with fewer resources [3].
+- Genie advances large-scale unsupervised generative world models based on video tokenization and transformer architectures, enabling interactive agent training in diverse, unlabeled scenes but faces challenges with precise physical modeling [4].
+- MuZero remains a landmark method integrating learned models with Monte Carlo Tree Search planning, achieving superhuman results in discrete-action games, differing from earlier recurrent model architectures by using implicit planning models [5].
+- Action-conditioned video world models constitute a specialized branch focusing on video prediction conditioned on actions to enable control in robotics and interactive environments, using geometric attention and unified policy-prediction frameworks but face challenges in real-time responsiveness and sim-to-real transfer [6][7][8][9].
+
 
 ## Background
 
-World models stem from foundational work by Schmidhuber and colleagues beginning in the 1990s, which introduced the use of recurrent neural networks (RNNs) as predictive world models capable of supporting planning and reinforcement learning through supervised prediction of environment dynamics [4]. These early works incorporated the concept of artificial curiosity to motivate exploration and combined recurrent models with controllers capable of learning behaviors through prediction and planning.
+World models refer to internal predictive models that agents learn to represent and simulate the dynamics of their environment. The seminal work by Ha and Schmidhuber (2018) framed this in the context of deep learning by training a generative recurrent neural network to compress spatiotemporal environment data, equipped with a controller network trained to act within the learned world model [1]. They employed LSTM architectures combined with mixture density networks to model observation distributions and trained with backpropagation, while using evolutionary strategies to train the policy controller [1][2]. This approach enabled agents to learn compact latent dynamics and plan policies by interacting mostly within a hallucinated simulated environment created by the world model.
 
-A canonical architecture established later separates the world model into two modules: a V model compressing high-dimensional observations into low-dimensional latent embeddings via convolutional variational autoencoders (ConvVAEs), and an M model that models temporal dynamics in the latent space using recurrent neural networks combined with a mixture density network (MDN-RNN) to probabilistically predict distributions over future embeddings under actions [1][2][3].
+The contribution of Ha and Schmidhuber laid a practical foundation drawing from decades of RNN and model-based reinforcement learning work. It demonstrated that unsupervised predictive modeling combined with compact policy evolution can solve complex tasks efficiently [1][2]. However, these foundational models primarily used recurrent architectures limited by memory constraints over long sequences and relatively small-scale environmental complexity.
 
-This configuration enables the use of learned latent "dream" environments 
- simulated rollout trajectories in latent spaces  where controllers can be trained efficiently for decision making, transferring learned policies back to the real environment. Key benefits include compact representation, probabilistic modeling of uncertainty, and accelerated policy search [1][2][3].
+Contrastively, more recent developments have pursued scaling, robustness, and generalization. This includes the evolution of architectures incorporating normalization techniques, stronger optimizers, and big-data training methods. Parallel lines in model-based planning and generative video models have pushed capabilities in both simulated and real-world-like environments.
 
-## Foundational Core Technical Methods
 
-The foundational works [1][2][3][4] emphasize three core technical components:
+## Foundational World Models: RNN-Based Learning and Policy Evolution
 
-1. **Latent Space Encoding with VAEs:** Raw observations, often high-dimensional images, are compressed into latent vectors (z) by the V model, a convolutional variational autoencoder trained by minimizing reconstruction loss. This reduces computational cost and focuses modeling capacity on salient features [1]. However, some limitations arise as the latent space may encode irrelevant features, potentially requiring retraining or task-specific adaptation.
+The earliest impactful approach to world models considered was the combination of recurrent neural networks to learn environment state predictions and evolutionary strategies to train smaller controllers operating within the learned latent space [1][2]. The RNN architecture, notably using LSTM cells, served to capture temporal dependencies and generate probabilistic predictions via mixture density outputs to represent uncertainty. This unsupervised learning setting was essential to creating a general-purpose, adaptive world model without requiring explicit environment labels or known dynamics.
 
-2. **Predictive Temporal Modeling with Recurrent MDN Networks:** The M model is typically an LSTM augmented with a mixture density output layer that predicts the probability distribution over next latent states given current latent encodings, actions, and hidden states. This stochastic approach captures environment uncertainty and complex temporal dependencies [1][2][3].
+A separate, smaller neural controller was trained to map the learned internal representation features into actions optimizing task performance. Training this policy with evolutionary strategies, instead of backpropagation, helped simplify credit assignment due to the complexity of differentiating through long time horizons in the latent space. This division allowed fast and compact policy optimization distinct from the large predictive model training.
 
-3. **Controller Training in Latent Simulated Environments:** Controllers receive current latent states and RNN hidden states as inputs and are trained via reinforcement learning or evolutionary strategies inside the learned world model, allowing efficient policy optimization without interaction with the real environment [1][2].
+Experimental validations in OpenAI Gym environments demonstrated that policies trained entirely within the hallucinated world model were transferable back to their real environments, validating the practical utility of the approach [2]. This represented a technical step forward in unsupervised model-based reinforcement learning. However, reliance on RNNs and MDN meant limitations in long-term memory capacity and difficulty scaling to more complex or high-dimensional environments, motivating further innovations.
 
-These technical elements create a framework where agents can train entirely within their dream environments, greatly accelerating learning. Early RNN world modeling work laid this conceptual and algorithmic foundation, but limitations include relatively simple non-hierarchical planning and challenges in encoding task-relevant latent features [4]. Extensions have proposed hierarchical models and unified architectures combining model and controller networks [2].
 
-## Recent Advances in World Model Architectures
+## Recent Advances: Architectural Robustness, Scale, and Generality in DreamerV3 and Genie
 
-Recent literature demonstrates significant advances built on the foundational architecture that enhance generality, stability, and exploration:
+DreamerV3 represents a significant leap forward in the evolution of world models leveraging recurrent state-space architectures combined with extensive architectural and training robustness innovations [3]. It introduces components such as block gated recurrent units (block GRU), RMS normalization, sigmoid linear unit (SiLU) activations, and advanced optimizers like LaProp. DreamerV3 also employs data balancing techniques—such as percentile return normalization, Kullback-Leibler divergence balancing, and free bits—that stabilize learning and significantly improve training robustness across diverse tasks [3].
 
-### DreamerV3 and Variants
+Benchmarks show DreamerV3 surpassing state-of-the-art prior models including MuZero in Atari game performance while using fewer computational resources and fixed hyperparameters, signaling stronger generality and sample efficiency [3][5]. It notably scales to over 150 tasks including continuous and discrete action spaces, and 2D and 3D domains, demonstrating wide applicability.
 
-DreamerV3 [5] introduces improvements to stabilize training across diverse visual environments and task domains using a Recurrent State-Space Model (RSSM) with several normalization and balanced loss techniques (e.g., symlog transformations, free bits for KL loss clipping). It is trained jointly with a critic and an actor, allowing imagination-driven policy improvement.
+Genie offers a starkly different vector in the world model research landscape by focusing on large-scale unsupervised generative video models trained on unlabeled internet videos [4]. It incorporates a massive 11 billion parameter transformer-based architecture unifying video frame tokenization and autoregressive dynamics modeling. Such scale enables long-range spatiotemporal modeling, supporting agent interaction via action-conditioned generation even on unseen scenes, which is a leap toward generalist agent training [4].
 
-DreamerV3 shows remarkable robustness, success in complex environments like Minecraft diamond collection from raw pixels without expert input, and scalability across 150+ benchmarks with fixed hyperparameters. Extensions such as DreamerV3-XP [13] enhance exploration through prioritized replay buffers and uncertainty estimation leading to faster learning.
+Despite Genie’s impressive scale and unsupervised learning prowess, it faces challenges modeling precise physical interactions and object dynamics, areas wherein DreamerV3 and MuZero maintain an edge through their more explicit latent state and planning formulations [3][4][5]. These complementary approaches highlight a research frontier prioritizing both scalable knowledge capture and physical fidelity.
 
-### MuZero and Planning in Latent Spaces
 
-MuZero [10] learns a latent dynamics model optimized for policy, value, and reward prediction without requiring explicit environment dynamics or pixel reconstruction, integrating model learning tightly with Monte-Carlo Tree Search (MCTS) for planning. It achieves superhuman results in games and establishes a foundation for combining learned latent models with search-based planning.
+## MuZero and the Evolution of Implicit Planning in Learned Models
 
-MuDreamer, a reconstruction-free variant inspired by DreamerV3 and MuZero, replaces pixel reconstruction with prediction of environment rewards and action-conditioned dynamics to improve robustness to visual distractions and training efficiency [2].
+MuZero introduced a distinct model-based reinforcement learning paradigm by learning implicit environment dynamics including policy, value, and reward functions optimized for planning within a learned latent space [5]. It combines this with Monte Carlo Tree Search (MCTS) to enable planning in complex discrete-action domains such as board games and Atari, achieving superhuman performance [5]. Unlike the explicit recurrent world models of the foundational era, MuZero’s model is specialized toward planning and evaluation functions enabling deeper lookahead without known environment rules.
 
-### Generative Interactive Environments (Genie)
+Training is based on self-play, using the learned model predictions to guide Monte Carlo planning, differing from the Ha and Schmidhuber approach that evolves policies within hallucinated model rollouts [1][5]. MuZero exemplifies an effective fusion of model-based RL with classical planning methods, yet its discrete-action planning focus contrasts with the more general continuous control applicability of DreamerV3.
 
-Genie [7] represents a large-scale generative world model constructed from unlabeled video datasets using spatiotemporal tokenization and autoregressive modeling, with 11B parameters enabling agents to learn from previously unseen video behaviors. It introduces a new direction towards more open-ended, data-driven interactive virtual worlds beyond hand-designed simulators.
+Subsequent extensions have aimed to improve MuZero’s applicability to large or continuous action spaces but challenges remain comparatively in scalability and ease of training [5]. Furthermore, the architectural complexity of MCTS planning in latent spaces introduces implementation difficulties relative to the more end-to-end learned architectures in recent world models [3][5].
 
-### Exploration Enhancements
 
-Optimistic World Models [8] and extensions of DreamerV3 explore incorporating optimism biases in the learned models and uncertainty-based intrinsic rewards to encourage efficient exploration in challenging sparse-reward environments, demonstrating substantial empirical improvements in benchmarks like Atari and DeepMind control tasks.
+## Action-Conditioned Video World Models: Integration of Video Prediction and Control
 
-## Technical Methods in Action-Conditioned Video World Models
+Recent work on action-conditioned video world models embodies a specialized trajectory in world models blending video prediction with control conditioning to enable tightly integrated perception and action systems in robotics and interactive environments [6][7][8][9]. These models commonly represent environments through sequences of images or frames conditioned explicitly on agent actions, aiming to faithfully predict future observations aligned to commanded behaviors.
 
-The last several years have seen the emergence of video-conditioned world models that tightly integrate visual perception with action-conditioned future prediction. These models are integral to embodied environments such as robotics and procedural task execution [11][12].
+Top methods emphasize mechanisms for encoding geometric transformations and preserving scene consistency, such as using SE(3) attention mechanisms to model rigid-body motions and multi-view observations integration [7]. Architectures often employ cross-attention to enhance conditioning on high-dimensional actions and unify policy learning with video generation, adopting diffusion models or autoregressive frameworks for sequential predictions [6][8].
 
-### Core Architectures
+Benchmarks demonstrate strong performance on various robotic manipulation datasets and competitions, yet challenges persist including faithful rollout adherence to actions, maintaining temporal consistency over long horizons, and bridging the gap to real-world physical interaction through sim-to-real transfer [6][7][9].
 
-Transformer-based video generation models such as VideoGPT [14] and diffusion models [15] form the backbone of many action-conditioned video world models. These models predict future frames conditioned on past observations and future actions, combining visual feature transformers and autoregressive or diffusion-based generation approaches.
+Surveys identify key research gaps such as incorporating tactile and multimodal sensing beyond vision, improving uncertainty estimation, and enhancing real-time interactive responsiveness and memory capabilities [9]. The computational costs and appearance biases inherent to video-based models also constrain deployment in time-critical systems.
 
-Notable approaches like DreamTrue [11] and 0-WM [15] introduce multi-view and multi-modal conditioning, counterfactual post-training, and cross-embodiment action conditioning to improve physical plausibility and action-following fidelity.
-
-UNITAS [16] pushes spatial reasoning further with 3D-native world action models integrating metric spatial coordinates and video latents, enabling more precise embodied manipulation modeling.
-
-### Training Regimes and Data
-
-Training methods utilize varied data sources including large-scale robot teleoperation trajectories, human egocentric videos, and teleoperated failure sequences, combining supervised learning of actions, video prediction, and recognized task progress signals [15]. Cross-view and multi-agent synchronization enhance modeling of interactions [13]. Some methods adopt purely offline training without real-world data, enabling zero-shot generalization [17].
-
-### Challenges
-
-Crucial challenges include bridging between predicted visual futures and executable robot actions, coping with sparse labeled action data, and computational efficiency for real-time control [18]. Studies highlight limitations in modeling complex physical interactions (ACWM-Phys [19]) and the need for scalable yet interpretable action-conditioned video prediction architectures.
 
 ## Trends and open problems
 
-Several broad trends emerge from the synthesis of foundational and recent literature:
+The survey of foundational and modern world models reveals clear research trends towards: (1) scaling architectures to improve generality and robustness, as seen in DreamerV3 and Genie; (2) combining latent state modeling with explicit planning, typified by MuZero; and (3) integrating video prediction with control for embodied interaction in action-conditioned models.
 
-- **Latent Space Modeling and Stochastic Dynamics**: Latent variable models combined with probabilistic RNNs remain central, with ongoing work integrating more expressive models and hierarchical structures.
+A major open challenge is the realistic modeling of physical interaction dynamics at scale, where unsupervised generative video models like Genie excel in scale and diversity but struggle with precise physics, while models like DreamerV3 and MuZero can address physics in narrower domains but less so in open-ended settings. Bridging sim-to-real gaps, enhancing tactile sensing and multimodal inputs, and improving long-horizon planning and memory are critical milestones.
 
-- **Generalization Across Diverse and Complex Domains**: Models like DreamerV3 and Genie demonstrate scaling world models to hundreds of tasks and open-world video datasets, but generalization beyond benchmark suites to real applications requires further study.
+Another frontier includes reconciling the planning complexity and discrete action focus of MuZero with the end-to-end continuous control adaptability of DreamerV3 and video-driven models. Efforts to unify transformer-based architectures with recurrent or diffusion approaches may also reshape capability landscapes.
 
-- **Exploration via Uncertainty and Optimism**: Incorporation of intrinsic motivation, uncertainty estimation, and optimism in model training improves exploration efficacy but raises questions on efficient scaling and proper balance.
+Finally, more comprehensive, standardized benchmarks spanning physical realism, action diversity, and task complexity are needed to ensure consistent progress in constructing generalist, safe, and scalable world models. Transparency and interpretability of learned models and planning mechanisms remain important to enable trustworthy deployment in real-world applications.
 
-- **Bridging World Models and Real-World Control**: Transferring from learned latent dream environments or video-conditioned predictions to physical robot control remains challenging due to calibration, embodiment differences, and sparse data.
-
-- **Action-Conditioned Video Prediction Advances**: Multimodal transformers, diffusion models, and unified video-action models advance the fidelity and applicability of action-conditioned video world models, though computational cost and long-horizon state consistency require further innovation.
-
-- **Hierarchical and Abstract Planning**: Foundational works and later extensions suggest the importance and difficulty of hierarchical planning beyond stepwise prediction; concrete architectures remain an active research frontier.
-
-- **Data Scale and Heterogeneity**: Mobilizing large collections of unlabeled video, multi-agent, and multimodal data offers opportunities but also demands efficient training methods and better unsupervised representation learning.
-
-- **Safety and Robustness in Model-Based RL**: Emerging works integrating safety constraints into world models like Safe DreamerV3 highlight the growing importance of safe and reliable deployment.
-
-In conclusion, world models have evolved from foundational RNN latent-space predictors rooted in Schmidhuber's early work to diverse, scalable, and multimodal frameworks integrating robust training, planning, and video generation. Future progress will depend on overcoming hierarchical reasoning challenges, improving real-world transfer, and balancing scalable data-driven representation learning with computational efficiency and safety assurances.
+These directions will continue to define world model research in the coming years.
 
 ## References
-[1] World Models. arxiv. https://arxiv.org/abs/1803.10122 (2018-03-27)
-[2] Recurrent world models facilitate policy evolution. web. https://dl.acm.org/doi/10.5555/3327144.3327171 (2018-12-03)
-[3] World Models Official Project Website. web. https://worldmodels.github.io/ (2018-03-27)
-[4] 1990: Planning & Reinforcement Learning with Recurrent World Models and Artificial Curiosity. web. https://people.idsia.ch/~juergen/world-models-planning-curiosity-fki-1990.html (n.d.)
-[5] Mastering Diverse Domains through World Models (DreamerV3). hf-search. https://huggingface.co/papers/2301.04104 (2023-01-10)
-[6] Policy-shaped prediction: avoiding distractions in model-based reinforcement learning. hf-search. https://huggingface.co/papers/2412.05766 (2024-12-08)
-[7] Genie: Generative Interactive Environments. hf-search. https://huggingface.co/papers/2402.15391 (2024-02-23)
-[8] Optimistic World Models: Efficient Exploration in Model-Based RL. web. https://arxiv.org/html/2602.10044v1 (2026-02-17)
-[9] DreamerV3-XP: Optimizing Exploration through Uncertainty Estimation. web. https://arxiv.org/html/2510.21418v1 (2025-10-21)
-[10] MuZero: Mastering Games by Planning with a Learned Model. hf-search. https://huggingface.co/papers/1911.08265 (2019-11-19)
-[11] DreamTrue: Action-Faithful Robot World Model with Counterfactual Post-Training. arxiv. https://arxiv.org/abs/2610.12468 (2026-10-08)
-[12] WorldGuide: Goal-Directed Video World Model for Procedural Task Execution. arxiv. https://arxiv.org/abs/2610.12459 (2026-10-08)
-[13] Multi-Agent Egocentric World Model with Fine-Grained Embodied Interaction. arxiv. https://arxiv.org/abs/2610.12299 (2026-10-08)
-[14] iVideoGPT: Interactive VideoGPTs are Scalable World Models. hf-search. https://huggingface.co/papers/2405.15223 (2024-05-24)
-[15] 0-WM: A Unified Video-Action World Model for Robotic Manipulation. web. https://arxiv.org/html/2606.01027 (n.d.)
-[16] UNITAS: A 3D-Native World Action Model for Embodied Manipulation. arxiv. https://arxiv.org/abs/2610.12099 (2026-10-08)
-[17] Aether: Geometric-Aware Unified World Modeling. hf-search. https://huggingface.co/papers/2503.18945 (2025-03-24)
-[18] WAM-Cache: Staleness-Bounded KV Reuse for Efficient World Action Models. arxiv. https://arxiv.org/abs/2610.11401 (2026-10-08)
-[19] ACWM-Phys: Investigating Generalized Physical Interaction in Action-Conditioned Video World Models. hf-search. https://huggingface.co/papers/2605.08567 (2026-05-09)
+[1] World Models. arxiv. https://arxiv.org/abs/1803.10122 (2018-05-09)
+[2] Recurrent World Models Facilitate Policy Evolution. web. https://papers.nips.cc/paper/7512-recurrent-world-models-facilitate-policy-evolution.pdf (2018-12)
+[3] Mastering Diverse Domains through World Models (DreamerV3). hf-search. https://huggingface.co/papers/2301.04104 (2023-01-10)
+[4] Genie: Generative Interactive Environments. hf-search. https://huggingface.co/papers/2402.15391 (2024-02-23)
+[5] MuZero: Mastering Atari, Go, Chess and Shogi by Planning with a Learned Model. hf-search. https://huggingface.co/papers/1911.08265 (2019-11-19)
+[6] ACWM-Phys: Investigating Generalized Physical Interaction in Action-Conditioned Video World Models. arxiv. https://arxiv.org/abs/2605.08567 (2026-05-09)
+[7] DreamX-Phi 1.0: Action-Conditioned Video World Model for Robotic Manipulation. hf-search. https://huggingface.co/papers/2608.13489 (2026-08-13)
+[8] τ₀-WM: A Unified Video-Action World Model for Robotic Manipulation. arxiv. https://arxiv.org/abs/2606.01027 (2026-06-03)
+[9] Towards Interactive Video World Modeling (Survey). web. https://www.alphaxiv.org/abs/2606.01164 (2026-05-31)

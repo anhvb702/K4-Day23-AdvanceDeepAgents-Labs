@@ -157,6 +157,55 @@ def save_outputs(backend, topic, messages, elapsed, model_name, reports_dir=REPO
     return reports_dir / f'{slug}.md'
 
 
+PAPER_URL = re.compile(r'^https://(?:arxiv\.org/abs|huggingface\.co/papers)/(\d{4}\.\d{4,5})$')
+
+
+def _norm_title(text):
+    return set(re.findall(r'[a-z0-9]+', str(text).lower()))
+
+
+_STOP = {'a', 'an', 'the', 'of', 'for', 'and', 'in', 'on', 'to', 'with', 'via', 'by', 'from', 'is', 'are',
+         'arxiv', 'preprint', 'paper', 'official', 'foundational'}
+
+
+def fetch_paper_title(paper_id):
+    """Real title of an arXiv id via Hugging Face (no rate limit), falling back to arXiv. None if unknown."""
+    import httpx
+    try:
+        r = httpx.get(f'https://huggingface.co/api/papers/{paper_id}', timeout=20, follow_redirects=True)
+        if r.status_code == 200 and r.json().get('title'):
+            return r.json()['title']
+        time.sleep(3)
+        r = httpx.get('https://export.arxiv.org/api/query', params={'id_list': paper_id}, timeout=30)
+        m = re.search(r'<entry>.*?<title>(.*?)</title>', r.text, re.S)
+        return re.sub(r'\s+', ' ', m.group(1)).strip() if m else None
+    except Exception:
+        return None
+
+
+def audit_source_titles(sources, fetch=fetch_paper_title):
+    """Deterministic check that each arXiv/HF paper id really is the paper the manifest says it is."""
+    bad = []
+    for s in sources:
+        if s.get('source') in ('arxiv', 'hf-daily', 'hf-search') and not PAPER_URL.match(str(s.get('url', ''))):
+            bad.append(f"source [{s.get('n')}] {s.get('url')} is not a real paper URL (needs a numeric arXiv id like 2501.12948)")
+            continue
+        m = PAPER_URL.match(str(s.get('url', '')))
+        if not m:
+            continue
+        real = fetch(m.group(1))
+        if not real:
+            continue  # unverifiable (network); never fail on this
+        a, b = _norm_title(s.get('title', '')) - _STOP, _norm_title(real) - _STOP
+        shared = len(a & b)
+        if not a or not b or (shared < 2 and shared < 0.5 * min(len(a), len(b))):
+            bad.append(f"source [{s.get('n')}] {s.get('url')} is titled {real!r} but the manifest says {s.get('title')!r}")
+    if bad:
+        raise RuntimeError('wrong paper id/title: ' + '; '.join(bad[:6]) +
+                           '. Take ids only from tool results; re-search the intended paper with web_search/arxiv_search, '
+                           'fix sources.json AND every sentence citing it (drop the claim if no matching source is found).')
+
+
 def _execute_ok(backend, command):
     response = backend.execute(command)
     if response.exit_code != 0:
@@ -190,7 +239,8 @@ def main(topic):
                 'PHASE 2: Read the notes and merge only relevant supported sources into sources.json. '
                 'Assign each source a positive integer n (1,2,3,...). An inline citation uses that n, '
                 'NEVER an arxiv id, URL or title. Canonical URL and discovery-source labels must match. '
-                'Then WRITE the full 1600-2400 word report BODY with cited TL;DR, Background, '
+                'Then WRITE the full 1800-2400 word report BODY (it MUST exceed 1500 words: write each of the 4-5 '
+                'thematic sections as 3-4 substantial paragraphs comparing methods, and verify with `wc -w`) with cited TL;DR, Background, '
                 '3-6 thematic sections and exact heading Trends and open problems. '
                 'Support every technical claim with its actual source evidence. '
                 'Do not write a References heading or list at all. Stop after saving the body; '
@@ -212,6 +262,10 @@ def main(topic):
                                      PREPARER_PATH: PREPARER_SOURCE.read_bytes()})
                     print(_execute_ok(backend, f'python3 {PREPARER_PATH} && python3 {FINALIZER_PATH}'), flush=True)
                     print(_execute_ok(backend, f'python3 {VALIDATOR_PATH}'), flush=True)
+                    try:
+                        audit_source_titles(json.loads(download(backend, [SOURCES_PATH]).get(SOURCES_PATH) or b'[]'))
+                    except (ValueError, TypeError, AttributeError):
+                        pass  # unreadable manifest is reported by save_outputs below
                     path = save_outputs(backend, topic, result['messages'], time.monotonic() - start, model_name)
                     break
                 except RuntimeError as exc:

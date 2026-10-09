@@ -4,35 +4,19 @@
     "id": "1803.10122",
     "url": "https://arxiv.org/abs/1803.10122",
     "title": "World Models",
-    "date": "2018-03-27",
+    "date": "2018-05-09",
     "source": "arxiv"
   },
   {
     "n": 2,
-    "id": "3327171",
-    "url": "https://dl.acm.org/doi/10.5555/3327144.3327171",
-    "title": "Recurrent world models facilitate policy evolution",
-    "date": "2018-12-03",
+    "id": "7512",
+    "url": "https://papers.nips.cc/paper/7512-recurrent-world-models-facilitate-policy-evolution.pdf",
+    "title": "Recurrent World Models Facilitate Policy Evolution",
+    "date": "2018-12",
     "source": "web"
   },
   {
     "n": 3,
-    "id": "https://worldmodels.github.io/",
-    "url": "https://worldmodels.github.io/",
-    "title": "World Models Official Project Website",
-    "date": "2018-03-27",
-    "source": "web"
-  },
-  {
-    "n": 4,
-    "id": "n.d.",
-    "url": "https://people.idsia.ch/~juergen/world-models-planning-curiosity-fki-1990.html",
-    "title": "1990: Planning & Reinforcement Learning with Recurrent World Models and Artificial Curiosity",
-    "date": "n.d.",
-    "source": "web"
-  },
-  {
-    "n": 5,
     "id": "2301.04104",
     "url": "https://huggingface.co/papers/2301.04104",
     "title": "Mastering Diverse Domains through World Models (DreamerV3)",
@@ -40,15 +24,7 @@
     "source": "hf-search"
   },
   {
-    "n": 6,
-    "id": "2412.05766",
-    "url": "https://huggingface.co/papers/2412.05766",
-    "title": "Policy-shaped prediction: avoiding distractions in model-based reinforcement learning",
-    "date": "2024-12-08",
-    "source": "hf-search"
-  },
-  {
-    "n": 7,
+    "n": 4,
     "id": "2402.15391",
     "url": "https://huggingface.co/papers/2402.15391",
     "title": "Genie: Generative Interactive Environments",
@@ -56,99 +32,43 @@
     "source": "hf-search"
   },
   {
-    "n": 8,
-    "id": "https://arxiv.org/html/2602.10044v1",
-    "url": "https://arxiv.org/html/2602.10044v1",
-    "title": "Optimistic World Models: Efficient Exploration in Model-Based RL",
-    "date": "2026-02-17",
-    "source": "web"
-  },
-  {
-    "n": 9,
-    "id": "https://arxiv.org/html/2510.21418v1",
-    "url": "https://arxiv.org/html/2510.21418v1",
-    "title": "DreamerV3-XP: Optimizing Exploration through Uncertainty Estimation",
-    "date": "2025-10-21",
-    "source": "web"
-  },
-  {
-    "n": 10,
+    "n": 5,
     "id": "1911.08265",
     "url": "https://huggingface.co/papers/1911.08265",
-    "title": "MuZero: Mastering Games by Planning with a Learned Model",
+    "title": "MuZero: Mastering Atari, Go, Chess and Shogi by Planning with a Learned Model",
     "date": "2019-11-19",
     "source": "hf-search"
   },
   {
-    "n": 11,
-    "id": "2610.12468",
-    "url": "https://arxiv.org/abs/2610.12468",
-    "title": "DreamTrue: Action-Faithful Robot World Model with Counterfactual Post-Training",
-    "date": "2026-10-08",
-    "source": "arxiv"
-  },
-  {
-    "n": 12,
-    "id": "2610.12459",
-    "url": "https://arxiv.org/abs/2610.12459",
-    "title": "WorldGuide: Goal-Directed Video World Model for Procedural Task Execution",
-    "date": "2026-10-08",
-    "source": "arxiv"
-  },
-  {
-    "n": 13,
-    "id": "2610.12299",
-    "url": "https://arxiv.org/abs/2610.12299",
-    "title": "Multi-Agent Egocentric World Model with Fine-Grained Embodied Interaction",
-    "date": "2026-10-08",
-    "source": "arxiv"
-  },
-  {
-    "n": 14,
-    "id": "2405.15223",
-    "url": "https://huggingface.co/papers/2405.15223",
-    "title": "iVideoGPT: Interactive VideoGPTs are Scalable World Models",
-    "date": "2024-05-24",
-    "source": "hf-search"
-  },
-  {
-    "n": 15,
-    "id": "https://arxiv.org/html/2606.01027",
-    "url": "https://arxiv.org/html/2606.01027",
-    "title": "0-WM: A Unified Video-Action World Model for Robotic Manipulation",
-    "date": "n.d.",
-    "source": "web"
-  },
-  {
-    "n": 16,
-    "id": "2610.12099",
-    "url": "https://arxiv.org/abs/2610.12099",
-    "title": "UNITAS: A 3D-Native World Action Model for Embodied Manipulation",
-    "date": "2026-10-08",
-    "source": "arxiv"
-  },
-  {
-    "n": 17,
-    "id": "2503.18945",
-    "url": "https://huggingface.co/papers/2503.18945",
-    "title": "Aether: Geometric-Aware Unified World Modeling",
-    "date": "2025-03-24",
-    "source": "hf-search"
-  },
-  {
-    "n": 18,
-    "id": "2610.11401",
-    "url": "https://arxiv.org/abs/2610.11401",
-    "title": "WAM-Cache: Staleness-Bounded KV Reuse for Efficient World Action Models",
-    "date": "2026-10-08",
-    "source": "arxiv"
-  },
-  {
-    "n": 19,
+    "n": 6,
     "id": "2605.08567",
-    "url": "https://huggingface.co/papers/2605.08567",
+    "url": "https://arxiv.org/abs/2605.08567",
     "title": "ACWM-Phys: Investigating Generalized Physical Interaction in Action-Conditioned Video World Models",
     "date": "2026-05-09",
+    "source": "arxiv"
+  },
+  {
+    "n": 7,
+    "id": "2608.13489",
+    "url": "https://huggingface.co/papers/2608.13489",
+    "title": "DreamX-Phi 1.0: Action-Conditioned Video World Model for Robotic Manipulation",
+    "date": "2026-08-13",
     "source": "hf-search"
+  },
+  {
+    "n": 8,
+    "id": "2606.01027",
+    "url": "https://arxiv.org/abs/2606.01027",
+    "title": "τ₀-WM: A Unified Video-Action World Model for Robotic Manipulation",
+    "date": "2026-06-03",
+    "source": "arxiv"
+  },
+  {
+    "n": 9,
+    "id": "2606.01164",
+    "url": "https://www.alphaxiv.org/abs/2606.01164",
+    "title": "Towards Interactive Video World Modeling (Survey)",
+    "date": "2026-05-31",
+    "source": "web"
   }
 ]

@@ -1,29 +1,26 @@
 {
   "topic": "survey about world model",
   "model": "openai:gpt-4.1-mini",
-  "elapsed_s": 268.4,
-  "subagent_calls": 7,
+  "elapsed_s": 435.8,
+  "subagent_calls": 5,
   "tool_calls": {
-    "write_todos": 1,
-    "task": 7,
-    "read_file": 9,
-    "ls": 3,
-    "write_file": 5,
-    "execute": 5,
-    "edit_file": 6,
-    "grep": 5
+    "write_todos": 3,
+    "task": 5,
+    "read_file": 8,
+    "write_file": 3,
+    "execute": 5
   },
   "tokens": {
-    "input": 828956,
-    "output": 11502
+    "input": 544498,
+    "output": 39401
   },
-  "n_sources": 19,
+  "n_sources": 9,
   "source_families": [
     "arxiv",
     "hf-search",
     "web"
   ],
   "research_model": "openai:gpt-4.1-mini",
-  "researcher_calls": 6,
+  "researcher_calls": 4,
   "citation_checker_calls": 1
 }
